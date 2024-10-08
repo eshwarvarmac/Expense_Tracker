@@ -1,0 +1,36 @@
+tr 
+{
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover 
+{
+    background-color: #D6EEEE;
+}
+
+body 
+{
+    background-color: #E8ECEF;
+}
+th, td 
+{
+    padding: 20px;
+}
+.centered 
+{
+    padding-top: 200px;
+    text-align: center;
+}
+/* input.form-control,select.form-control 
+{
+    width: 300px; 
+     margin-left: auto;
+    margin-right: auto;
+}  */
+label { 
+    float: left; 
+} 
+input { 
+    width: 50%; 
+}
+

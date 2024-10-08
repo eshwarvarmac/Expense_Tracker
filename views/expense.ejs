@@ -1,0 +1,248 @@
+<%- include('partials/header') %>
+
+<div class="jumbotron text-center">
+  <div class="container">
+    <form action="/expense" method="POST">
+      <div class="form-row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="expenseName">Expense Name</label>
+            <input type="text" class="form-control" id="expenseName" name="expenseName" placeholder="Enter the expense">
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="category">Category</label>
+            <select class="form-control" id="category" name="category">
+              <option selected>Choose...</option>
+              <option value="Income">Income</option>
+              <option value="Food & Drinks">Food & Drinks</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Housing">Housing</option>
+              <option value="Transportation">Transportation</option>
+              <option value="Vehicle">Vehicle</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Investments">Investments</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="text" class="form-control" id="amount" name="amount" placeholder="Enter the amount">
+          </div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input type="text" class="form-control" name="date" value="<%= currentDate %>">
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="time">Time</label>
+            <input type="text" class="form-control" name="time" value="<%= currentTime %>">
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-group">
+            <label for="additionalInfo">Additional Info</label>
+            <input type="text" class="form-control" name="additionalInfo">
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-dark">Submit</button>
+    </form>
+
+    <hr>
+
+    <% if (expenseList.length) { %>
+      <table class="table" >
+        <thead>
+          <tr>
+            <th>Expense</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(let index = 0; index < expenseList.length; index++) { %>
+            <tr>
+              <td><%= expenseList[index].expensename %></td>
+              <td><%= expenseList[index].category %></td>
+              <td><%= expenseList[index].amount %></td>
+              <td><%= expenseList[index].date %></td>
+              <td><%= expenseList[index].time %></td>
+              <td>
+                <a class="btn btn-light btn-sm" href="/delete?id=<%= expenseList[index].id %>" role="button">
+                  <i class="fas fa fa-trash-o"></i>
+                </a>
+                <a class="btn btn-light btn-sm" href="/edit-expense/<%= expenseList[index].id %>" role="button">
+                  <i class="fas fa fa-pencil-square-o"></i>
+                </a>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+      
+      <div class="form-row">
+        <div class="col-md-6 col-lg-6 col-sm-12">
+          <canvas id="pieChart" width="400" height="400" style="max-width: 400px; max-height: 400px;"></canvas>
+        </div>
+        <div class="col-md-6 col-lg-6 col-sm-12">
+          <canvas id="myChart" width="400" height="400" style="max-width: 400px; max-height: 400px;"></canvas>
+        </div>
+      </div>
+    <% } else { %>
+      <h5>Welcome to Expense Tracker!<br>Enter your expenses and track them in a simple way</h3>
+    <% } %>
+  </div>
+
+  <a class="btn btn-light btn-lg" href="/logout" role="button">Log Out</a>
+</div>
+
+<%- include('partials/footer') %>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+<script>
+  var categories = JSON.parse('<%- JSON.stringify(categories) %>');
+  var categoryValues = JSON.parse('<%- JSON.stringify(categoryValues) %>');
+  var pieColors = JSON.parse('<%- JSON.stringify(pieColors) %>');
+  
+  var ctx = document.getElementById('pieChart').getContext('2d');
+  var myPieChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: categories,
+      datasets: [{
+        data: categoryValues,
+        backgroundColor: pieColors
+      }]
+    },
+    options: {
+      responsive: true,
+      legend: {
+        position: 'right'
+      },
+      title: {
+      display: true,
+      text: "Expenditure vs Categories"
+    }
+
+    }
+  });
+
+  var barCategories = ["Income", "Expenditure"];
+  var barValues = JSON.parse('<%- JSON.stringify(barValues) %>');
+  var barColors = ["blue", "red"];
+  var maxBarValue = Math.max.apply(null, [barValues[0], barValues[1]]);
+  var ctx2 = document.getElementById('myChart').getContext('2d');
+  var myBarChart = new Chart(ctx2, {
+    type: "bar",
+    data: {
+      labels: barCategories,
+      datasets: [{
+        backgroundColor: barColors,
+        data: barValues
+      }]
+    },
+    options: {
+      plugins: {
+        datalabels: {
+          anchor: 'end',
+          align: 'top',
+          formatter: function(value, context) {
+            return value;
+          }
+        }
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true,
+            suggestedMax: maxBarValue + (maxBarValue * 0.1) // Adjusting the scale to include some padding
+          }
+        }]
+      },
+      legend: {display: false},
+      title: {
+        display: true,
+        text: "Income vs Expenditure"
+      }
+    }
+  });
+
+//   var ctx = document.getElementById("myChart");
+// debugger;
+// var data = {
+//   labels: ["2 Jan", "9 Jan", "16 Jan", "23 Jan", "30 Jan", "6 Feb", "13 Feb"],
+//   datasets: [{
+//     data: [150, 87, 56, 50, 88, 60, 45],
+//     backgroundColor: "#4082c4"
+//   }]
+// }
+// var myChart = new Chart(ctx, {
+//   type: 'bar',
+//   data: data,
+//   options: {
+//     "hover": {
+//       "animationDuration": 0
+//     },
+//     "animation": {
+//       "duration": 1,
+//       "onComplete": function() {
+//         var chartInstance = this.chart,
+//           ctx = chartInstance.ctx;
+
+//         ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+//         ctx.textAlign = 'center';
+//         ctx.textBaseline = 'bottom';
+
+//         this.data.datasets.forEach(function(dataset, i) {
+//           var meta = chartInstance.controller.getDatasetMeta(i);
+//           meta.data.forEach(function(bar, index) {
+//             var data = dataset.data[index];
+//             ctx.fillText(data, bar._model.x, bar._model.y - 5);
+//           });
+//         });
+//       }
+//     },
+//     legend: {
+//       "display": false
+//     },
+//     tooltips: {
+//       "enabled": false
+//     },
+//     scales: {
+//       yAxes: [{
+//         display: false,
+//         gridLines: {
+//           display: false
+//         },
+//         ticks: {
+//           max: Math.max(...data.datasets[0].data) + 10,
+//           display: false,
+//           beginAtZero: true
+//         }
+//       }],
+//       xAxes: [{
+//         gridLines: {
+//           display: false
+//         },
+//         ticks: {
+//           beginAtZero: true
+//         }
+//       }]
+//     }
+//   }
+// });
+
+</script>

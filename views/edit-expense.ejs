@@ -1,0 +1,55 @@
+<%- include('partials/header') %>
+
+<div class="container mt-5">
+  <h1 class="text-center mb-4">Edit Expense</h1>
+
+  <form action="/edit-expense/<%= expense.id %>" method="POST">
+    <div class="form-group">
+      <label for="expenseName">Expense Name:</label>
+      <input type="text" id="expenseName" name="expenseName" class="form-control" value="<%= expense.expensename %>" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="category">Category:</label>
+      <select class="form-control" id="category" name="category" value="<%= expense.category %>">
+        <option value="Income">Income</option>
+        <option value="Food & Drinks">Food & Drinks</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Housing">Housing</option>
+        <option value="Transportation">Transportation</option>
+        <option value="Vehicle">Vehicle</option>
+        <option value="Entertainment">Entertainment</option>
+        <option value="Investments">Investments</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label for="amount">Amount:</label>
+      <input type="number" id="amount" name="amount" class="form-control" value="<%= expense.amount %>" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="date">Date:</label>
+      <input type="date" id="date" name="date" class="form-control" value="<%= expense.date %>" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="time">Time:</label>
+      <input type="text" id="time" name="time" class="form-control" value="<%= expense.time %>" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="additionalInfo">Additional Info:</label>
+      <textarea id="additionalInfo" name="additionalInfo" class="form-control" rows="4"><%= expense.additionalinfo %></textarea>
+    </div>
+    
+    <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+  </form>
+
+  <div class="text-center mt-4">
+    <a href="/expense" class="btn btn-secondary">Back to Expense List</a>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
